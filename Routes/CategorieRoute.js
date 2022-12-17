@@ -9,7 +9,7 @@ const {VerfiyAdmin} = require('../Controlers/Auth')
 router.post("/", VerfiyAdmin, async function (request, response, next) {
     try {
         const Categorie = await CreateCategorie(request.body)
-        response.status(200).json(Categorie)
+        response.status(202).json(Categorie)
     }
     catch (error) {
         response.status(401).json(error.message)

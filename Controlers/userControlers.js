@@ -10,6 +10,7 @@ async function Register(RequestData) {
         Password: RequestData.Password,
         Gender: RequestData.Gender,
         MobileNumber: RequestData.MobileNumber,
+        IsAdmin:RequestData.IsAdmin,
     })
     return newUser.save()
 }
@@ -30,7 +31,7 @@ async function Login(RequestData) {
             const AccessToken = jwt.sign({
                 id: StoredUser.id, IsAdmin: StoredUser.IsAdmin, FirstName: StoredUser.FirstName
             }, process.env.SECRET_KEY, {
-                expiresIn: "24h"
+                expiresIn: "10d"
             })
          await User.findByIdAndUpdate(StoredUser.id,{$set:{"NumberOFLogin":StoredUser.NumberOFLogin+1 , "IsActive": true}})
             return { status: 200, result: { ...others, AccessToken } }
@@ -38,6 +39,36 @@ async function Login(RequestData) {
     }
 }
 
+
+async function LoginAmin(RequestData) {
+
+    const StoredUser = await User.findOne({ Email: RequestData.Email })
+    if (StoredUser === null) {
+        return { status: 401, result: "InCorrect Email" }
+    }
+    else {
+        if(StoredUser.IsAdmin){
+            const VerifyPassword = bcrypt.compareSync(RequestData.Password, StoredUser.Password)
+            if (VerifyPassword === false) {
+                return { status: 401, result: "InCorrect Password" }
+            }
+            else {
+                const { Password, IsAdmin,NumberOFLogin,IsActive ,...others } = StoredUser._doc
+                const AccessToken = jwt.sign({
+                    id: StoredUser.id, IsAdmin: StoredUser.IsAdmin, FirstName: StoredUser.FirstName
+                }, process.env.SECRET_KEY, {
+                    
+                })
+             await User.findByIdAndUpdate(StoredUser.id,{$set:{"NumberOFLogin":StoredUser.NumberOFLogin+1 , "IsActive": true}})
+                return { status: 200, result: { ...others, AccessToken } }
+            }
+        }
+        else{
+            return { status: 401, result: "You Are Not Admin" }
+        }
+       
+    }
+}
 async function UpdateUserData(userID, data) {
  return await User.findByIdAndUpdate(userID, { $set: data, }, { new: true, runValidators: true })
 }
@@ -94,6 +125,14 @@ async function GetAllUser(newOption, skip, limit) {
     }
 }
 
+async function GetUserInfo() {
+    const MostLogin =  await User.find().sort({ 'NumberOFLogin': -1 }).limit(3)
+    const ActivePeople = await User.find({"IsActive":true}) 
+    const result={MostLogin,ActivePeople}
+    return result
+    
+}
+
 async function GetNumberOfLogin(userID){
 
     const user = await User.findById(userID)
@@ -126,4 +165,4 @@ async function GetUsersStats() {
 }
 
 
-module.exports = { Register, Login, UpdateUserData, DeletUser, GetUserByID, GetAllUser, GetUsersStats , UpdateUserPassword , GetNumberOfLogin , logOut}
+module.exports = { Register,LoginAmin, Login, UpdateUserData, DeletUser, GetUserByID, GetAllUser, GetUsersStats , UpdateUserPassword , GetNumberOfLogin ,GetUserInfo, logOut}

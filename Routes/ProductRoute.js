@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const {VerfiyAdmin} = require('../Controlers/Auth')
-const { AddNewProduct, UpdateProduct, GetAllProducts, GetProductById, DeletProducById ,GetProductsStats } = require('../Controlers/productControlers')
+const { AddNewProduct, UpdateProduct, GetAllProducts, GetProductById, DeletProducById ,GetProductsStats ,GetProductInfo } = require('../Controlers/productControlers')
 
 router.post("/", VerfiyAdmin, async function (request, response, next) {
    try {
@@ -8,7 +8,7 @@ router.post("/", VerfiyAdmin, async function (request, response, next) {
       response.status(200).json(NewProduct)
    }
    catch (err) {
-      response.status(500).json(err.message)
+      response.status(401).json(err.message)
    }
 })
 
@@ -26,19 +26,7 @@ router.put("/:id", VerfiyAdmin, async function (request, response, next) {
    }
 })
 
-router.get("/:id", async function (request, response, next) {
-   try {
-      const ProductData = await GetProductById(request.params.id)
-      if (ProductData) {
-         response.status(200).json(ProductData)
-      } else {
-         response.status(401).json("InCorrrect Product ID")
-      }
-   }
-   catch (error) {
-      response.status(401).json(error.message)
-   }
-})
+
 router.get("/", async function (request, response, next) {
    try {
       let limit = request.query.limit || 10
@@ -76,5 +64,29 @@ router.get("/Stats/Results", VerfiyAdmin, async function (request, response, nex
   catch (error) {
       response.status(401).json(error.message)
   }
+})
+
+router.get("/ProductInfo", VerfiyAdmin, async function (request, response, next) {
+
+   try {
+       const data = await GetProductInfo()
+       response.status(200).json(data)
+   }
+   catch (error) {
+       response.status(401).json(error.message)
+   }
+})
+router.get("/:id", async function (request, response, next) {
+   try {
+      const ProductData = await GetProductById(request.params.id)
+      if (ProductData) {
+         response.status(200).json(ProductData)
+      } else {
+         response.status(401).json("InCorrrect Product ID")
+      }
+   }
+   catch (error) {
+      response.status(401).json(error.message)
+   }
 })
 module.exports = router

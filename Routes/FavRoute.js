@@ -12,7 +12,7 @@ router.post("/", VerfiyUser, async function (request, response, next) {
         const user = await User.findById(request.User.id)
         if (product && user) {
             const newCart = await addFav(request.User.id, request.body)
-            response.status(200).json(newCart)
+            response.status(202).json(newCart)
         }
         else {
             response.status(401).json("Product id Or User Id Incorrect")

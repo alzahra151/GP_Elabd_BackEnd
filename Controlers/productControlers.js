@@ -66,7 +66,7 @@ async function DeletProducById(ProductId) {
         return "Incorrect Product Id"
 
     } else {
-        await Product.deleteOne(ProductData)
+        await Product.findByIdAndDelete(ProductId)
         return "Product Deleted Successfuly"
     }
 }
@@ -90,4 +90,14 @@ async function GetProductsStats() {
     ])
 
 }
-module.exports = { AddNewProduct, UpdateProduct, GetAllProducts, GetProductById, DeletProducById, GetProductsStats }
+
+
+async function GetProductInfo() {
+    const MostOrdered =  await Product.find().sort({ 'NumberOfOrder': -1 }).limit(3)
+    const MostFav =  await Product.find().sort({ 'NumberOfFav': -1 }).limit(3)
+    const MostCart =  await Product.find().sort({ 'NumberOfCarts': -1 }).limit(3)
+    const result={MostCart,MostFav,MostOrdered}
+    return result
+    
+}
+module.exports = { AddNewProduct, UpdateProduct, GetAllProducts, GetProductById, DeletProducById, GetProductsStats , GetProductInfo }

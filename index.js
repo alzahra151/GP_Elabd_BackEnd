@@ -2,7 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const morgan = require('morgan')
 const dotenv = require('dotenv')
-
+const cors = require('cors')
 const UserRoute = require('./Routes/UserRoute')
 const ProductRoute = require('./Routes/ProductRoute')
 const OrderRoute = require('./Routes/OrderRoute')
@@ -26,7 +26,11 @@ process.on('SIGINT', async function () {
     await mongoose.connection.close()
     process.exit(0)
 })
+
 var app = express()
+app.use(cors({
+    origin:'*'
+}))
 app.use(morgan('dev'))
 app.use(express.json())
 app.use('/api/elabdfoods/User',UserRoute)
