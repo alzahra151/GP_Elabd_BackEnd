@@ -37,7 +37,10 @@ router.get("/", async function (request, response, next) {
       let maxprice = request.query.maxprice 
       let CatID=request.query.Categorie
       let SubCatID=request.query.SubCategorie
-      let Products = await GetAllProducts(skip, limit, EnName, ArName, minprice, maxprice, CatID , SubCatID)
+      let oldest = request.query.oldest
+      let newest = request.query.newest
+      let alphabetical=request.query.alphabetical
+      let Products = await GetAllProducts(skip, limit, EnName, ArName, minprice, maxprice, CatID , SubCatID,oldest,newest,alphabetical)
       response.status(200).json(Products)
    }
    catch (err) {

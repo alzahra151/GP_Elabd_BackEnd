@@ -5,6 +5,10 @@ var Categschema = mongoose.Schema({
 
     CatEnName:{type: String,required: true},
 
+    CatArSize: {type: [String],required: true},
+
+    CatEnSize:{type: [String],required: true},   
+
     SubCategorieID :[{SubCat:{type: mongoose.Schema.ObjectId,ref:"SubCategorie",required: true}}]
 },
 

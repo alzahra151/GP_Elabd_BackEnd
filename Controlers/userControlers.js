@@ -27,20 +27,26 @@ async function Login(RequestData) {
             return { status: 401, result: "InCorrect Password" }
         }
         else {
-            const { Password, IsAdmin,NumberOFLogin,IsActive ,...others } = StoredUser._doc
-            const AccessToken = jwt.sign({
-                id: StoredUser.id, IsAdmin: StoredUser.IsAdmin, FirstName: StoredUser.FirstName
-            }, process.env.SECRET_KEY, {
-                expiresIn: "10d"
-            })
-         await User.findByIdAndUpdate(StoredUser.id,{$set:{"NumberOFLogin":StoredUser.NumberOFLogin+1 , "IsActive": true}})
-            return { status: 200, result: { ...others, AccessToken } }
+            if(StoredUser.Active){
+                const { Password, IsAdmin,NumberOFLogin,IsActive ,...others } = StoredUser._doc
+                const AccessToken = jwt.sign({
+                    id: StoredUser.id, IsAdmin: StoredUser.IsAdmin, FirstName: StoredUser.FirstName
+                }, process.env.SECRET_KEY, {
+                    expiresIn: "10d"
+                })
+             await User.findByIdAndUpdate(StoredUser.id,{$set:{"NumberOFLogin":StoredUser.NumberOFLogin+1 , "IsActive": true}})
+                return { status: 200, result: { ...others, AccessToken } }
+            }
+            else{
+                return { status: 401, result: "Now You Are Not activeted" }
+            }
+
         }
     }
 }
 
 
-async function LoginAmin(RequestData) {
+async function LoginAdmin(RequestData) {
 
     const StoredUser = await User.findOne({ Email: RequestData.Email })
     if (StoredUser === null) {
@@ -164,5 +170,24 @@ async function GetUsersStats() {
 
 }
 
+async function DiActivate(UserID){
+    const user= await User.findById(UserID)
+    if(user){
+   const data= await User.findByIdAndUpdate(UserID, { $set:{"Active":!user.Active}})
 
-module.exports = { Register,LoginAmin, Login, UpdateUserData, DeletUser, GetUserByID, GetAllUser, GetUsersStats , UpdateUserPassword , GetNumberOfLogin ,GetUserInfo, logOut}
+    if(data.Active){
+        return "User DiActiveted Successfully"  
+
+    }
+    else{
+        return "User Activeted Successfully"
+    }
+    }
+    else{
+        return "InCorrect ID"
+
+    }
+}
+
+
+module.exports = { Register,LoginAdmin, DiActivate,Login, UpdateUserData, DeletUser, GetUserByID, GetAllUser, GetUsersStats , UpdateUserPassword , GetNumberOfLogin ,GetUserInfo, logOut}

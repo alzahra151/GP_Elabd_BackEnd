@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-const { Register, Login,LoginAmin, UpdateUserData, DeletUser, GetUserByID, GetAllUser, GetUsersStats, UpdateUserPassword,GetUserInfo ,GetNumberOfLogin , logOut} = require('../Controlers/userControlers')
+const { Register, DiActivate,Login,LoginAdmin, UpdateUserData, DeletUser, GetUserByID, GetAllUser, GetUsersStats, UpdateUserPassword,GetUserInfo ,GetNumberOfLogin , logOut} = require('../Controlers/userControlers')
 const { VerfiyAuthorization, VerfiyAdmin } = require('../Controlers/Auth')
 const User = require('../Models/user')
 
@@ -23,7 +23,7 @@ router.post("/Login", async function (request, response, next) {
     response.status(status).json(result)
 })
 router.post("/Admin/Login", async function (request, response, next) {
-    const { status, result } = await LoginAmin(request.body)
+    const { status, result } = await LoginAdmin(request.body)
     response.status(status).json(result)
 })
 router.get("/Logout/:id", VerfiyAuthorization,async function (request, response, next) {
@@ -175,6 +175,17 @@ router.get("/:id", VerfiyAuthorization, async function (request, response, next)
 
 })
 
+router.put("/Active/:id", VerfiyAdmin, async function (request, response, next) {
+    try {
+        const message = await DiActivate(request.params.id)
+        response.status(200).json(message)
+
+    }
+    catch (error) {
+        response.status(401).json(error.message)
+    }
+
+})
 
 
 module.exports = router

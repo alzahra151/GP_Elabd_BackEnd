@@ -18,8 +18,8 @@ async function UpdateProduct(ProductId, Data) {
     return await Product.findByIdAndUpdate(ProductId, { $set: Data, }, { new: true, runValidators: true })
 }
 
-async function GetAllProducts(skip, limit, EnName, ArName, minprice, maxprice, CatID , SubCatID) {
-  
+async function GetAllProducts(skip, limit, EnName, ArName, minprice, maxprice, CatID , SubCatID , oldest , newest , alphabetical) {
+
     if (skip) {
         return await Product.find().skip(skip).limit(limit).populate('CategorieID', " CatArName CatEnName").populate('SubCategID', "ArsubCatName EnsubCatName ")
     }
@@ -49,6 +49,19 @@ async function GetAllProducts(skip, limit, EnName, ArName, minprice, maxprice, C
         
         return await Product.find({ "SubCategID": SubCatID}).populate('CategorieID', " CatArName CatEnName").populate('SubCategID', "ArsubCatName EnsubCatName ")
 
+    }
+    if (oldest) {
+
+        return await Product.find().sort({createdAt:1}).populate('CategorieID', " CatArName CatEnName").populate('SubCategID', "ArsubCatName EnsubCatName ")
+    }
+    if (newest) {
+
+        return await Product.find().sort({createdAt:-1}).populate('CategorieID', " CatArName CatEnName").populate('SubCategID', "ArsubCatName EnsubCatName ")
+    }
+
+    if (alphabetical) {
+
+        return await Product.find().sort({EnName: 1}).populate('CategorieID', " CatArName CatEnName").populate('SubCategID', "ArsubCatName EnsubCatName ")
     }
     else {
         return await Product.find().populate('CategorieID', " CatArName CatEnName").populate('SubCategID', "ArsubCatName EnsubCatName ")

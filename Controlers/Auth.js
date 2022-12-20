@@ -8,7 +8,9 @@ function VerfiyToken(request, response, next) {
     }
     else {
         const token = Data.split(" ")[1]
+       
         if (Data) {
+            
             jwt.verify(token, process.env.SECRET_KEY, function (error, User) {
                 if (error) {
                     return response.status(401).json('Sorry ! Token Is InValied Or Expired')

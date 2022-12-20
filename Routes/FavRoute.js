@@ -11,8 +11,14 @@ router.post("/", VerfiyUser, async function (request, response, next) {
         const product = await Product.findById(request.body.ProductID)
         const user = await User.findById(request.User.id)
         if (product && user) {
-            const newCart = await addFav(request.User.id, request.body)
-            response.status(202).json(newCart)
+
+            const newFav = await addFav(request.User.id, request.body)
+            if(newFav){
+                response.status(202).json(newFav)
+            }
+            else{
+                response.status(401).json("This Product Already In Your Favouirate")
+            }
         }
         else {
             response.status(401).json("Product id Or User Id Incorrect")
