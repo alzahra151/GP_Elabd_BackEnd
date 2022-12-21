@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 var ProductSchema = mongoose.Schema({
         EnName: { type: String, required: true, toLowerCase: true, trim: true },
         ArName: { type: String, required: true, toLowerCase: true, trim: true },
-        Image: { type: String, required: true },
+        Image: { type: Object, required: true },
         Amount:{type: Number , default:1},
         Price: { type: Number },
         CategorieID: { type: mongoose.Schema.ObjectId,ref:"Categorie",required: true},

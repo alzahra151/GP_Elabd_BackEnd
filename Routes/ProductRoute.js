@@ -1,7 +1,9 @@
 const router = require('express').Router()
 const {VerfiyAdmin} = require('../Controlers/Auth')
 const { AddNewProduct, UpdateProduct, GetAllProducts, GetProductById, DeletProducById ,GetProductsStats ,GetProductInfo } = require('../Controlers/productControlers')
-
+const cloudinary = require("../Controlers/Cloud");
+const uploader = require("../Controlers/Multer");
+const Product = require("../Models/product")
 router.post("/", VerfiyAdmin, async function (request, response, next) {
    try {
       const NewProduct = await AddNewProduct(request.body)
@@ -25,7 +27,6 @@ router.put("/:id", VerfiyAdmin, async function (request, response, next) {
       response.status(401).json(error.message)
    }
 })
-
 
 router.get("/", async function (request, response, next) {
    try {
@@ -92,4 +93,28 @@ router.get("/:id", async function (request, response, next) {
       response.status(401).json(error.message)
    }
 })
+
+router.post("/UploadProduct", uploader.single("Image"), async (req, res,next) => {
+ try{
+   console.log(req);
+   const image = await cloudinary.uploader.upload(req.file.path);
+console.log(image);
+   const newProduct = new Product({
+      EnName: req.body.EnName,
+      ArName: req.body.ArName,
+      Image: image,
+      Amount: req.body.Amount,
+      Price: req.body.Price,
+      CategorieID: req.body.CategorieID,
+      SubCategID: req.body.SubCategID,
+  })
+  console.log(newProduct);
+ await newProduct.save()
+   res.status(200).json(newProduct) 
+ }  
+ catch (error){
+   res.status(500).json(error.message)
+ }
+
+ }) 
 module.exports = router

@@ -54,7 +54,7 @@ router.get("/:id", async function (request, response, next) {
 })
 
 
-router.get("/", VerfiyAdmin ,async function (request, response, next) {
+router.get("/" ,async function (request, response, next) {
     try {
         const ArName = request.query.ArName 
         const EnName = request.query.EnName
