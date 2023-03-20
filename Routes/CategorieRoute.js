@@ -34,7 +34,7 @@ router.put("/:id", VerfiyAdmin, async function (request, response, next) {
 })
 
 
-router.get("/:id", VerfiyAdmin, async function (request, response, next) {
+router.get("/:id" , async function (request, response, next) {
     try {
         const Categorie = await GetCategorieByID(request.params.id)
         if(Categorie){
